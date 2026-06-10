@@ -1,0 +1,164 @@
+============================================================
+ ZD BIRTHDAYS — First-Time Setup Guide
+============================================================
+
+A small PHP + MySQL app that runs on XAMPP. Follow these steps
+in order. Should take about 10 minutes.
+
+
+------------------------------------------------------------
+ 1. REQUIREMENTS
+------------------------------------------------------------
+  - XAMPP (PHP 8.1+ and MySQL/MariaDB). Download: https://www.apachefriends.org
+  - A web browser.
+
+  Make sure the PHP "fileinfo" extension is enabled (it is by
+  default in XAMPP) — it's used to validate uploaded images.
+
+
+------------------------------------------------------------
+ 2. PUT THE FILES IN PLACE
+------------------------------------------------------------
+  Copy the whole project folder into XAMPP's web root so the
+  path is:
+
+      C:\xampp\htdocs\ZD_Birthdays
+
+  (The folder name matters — see APP_BASE in step 5.)
+
+  Then start XAMPP and turn ON both:
+      - Apache
+      - MySQL
+
+
+------------------------------------------------------------
+ 3. CREATE THE DATABASE
+------------------------------------------------------------
+  Option A — phpMyAdmin (easiest):
+    1. Open  http://localhost/phpmyadmin
+    2. Click the "Import" tab.
+    3. Choose the file:  database\schema.sql
+    4. Click "Go".
+
+  Option B — command line:
+    "C:\xampp\mysql\bin\mysql.exe" -u root < database\schema.sql
+
+  This creates the "zdbd" database with all tables and the
+  starter data (companies, branches, positions, captions).
+
+
+------------------------------------------------------------
+ 4. CHECK THE CONFIG
+------------------------------------------------------------
+  Open:  includes\config.php
+
+  Defaults work out-of-the-box on a fresh XAMPP:
+      DB_HOST  = localhost
+      DB_NAME  = zdbd
+      DB_USER  = root
+      DB_PASS  = ''          (empty — fine for local XAMPP)
+      APP_BASE = /ZD_Birthdays
+      APP_TIMEZONE = Africa/Lusaka
+
+  Only change these if your setup differs (see step 8 for
+  production). If you renamed the project folder, update
+  APP_BASE to match (e.g. '/MyFolder').
+
+
+------------------------------------------------------------
+ 5. MAKE THE UPLOADS FOLDER WRITABLE
+------------------------------------------------------------
+  The app saves employee photos and default images into:
+
+      uploads\
+
+  On Windows/XAMPP this is usually writable already. If photo
+  uploads fail later, make sure this folder is not read-only.
+
+
+------------------------------------------------------------
+ 6. CREATE THE FIRST ADMIN ACCOUNT
+------------------------------------------------------------
+  1. In your browser go to:
+
+         http://localhost/ZD_Birthdays/setup.php
+
+  2. Enter a username and a password (min 8 characters).
+  3. Submit.
+
+  >>> IMPORTANT: After it succeeds, DELETE the file setup.php
+      from the server. It refuses to run once an admin exists,
+      but delete it anyway for safety.
+
+
+------------------------------------------------------------
+ 7. LOG IN AND USE THE APP
+------------------------------------------------------------
+  Public site (what everyone sees):
+      http://localhost/ZD_Birthdays/
+
+  Admin login:
+      http://localhost/ZD_Birthdays/admin/
+
+  From the admin dashboard you can:
+      - Add employees one at a time, OR
+      - Import many at once: Import CSV -> download the
+        template, fill it in, upload it.
+      - Set default fallback images in Settings.
+      - Manage admin accounts under Accounts.
+
+
+------------------------------------------------------------
+ 8. SCHEDULE THE CLEANUP TASK (recommended)
+------------------------------------------------------------
+  Birthday wishes auto-expire after 24 hours. A small script
+  clears them out. Run it on a schedule (e.g. once an hour).
+
+  Windows — Task Scheduler:
+    Program/script:
+       "C:\xampp\php\php.exe"
+    Add arguments:
+       "C:\xampp\htdocs\ZD_Birthdays\cron\cleanup.php"
+    Trigger: Daily, repeat every 1 hour.
+
+  Linux cron (hourly):
+    0 * * * * /usr/bin/php /var/www/ZD_Birthdays/cron/cleanup.php
+
+  The app still works without this — wishes just won't be
+  purged until the task runs.
+
+
+------------------------------------------------------------
+ 9. GOING TO PRODUCTION (do these before a public launch)
+------------------------------------------------------------
+  [ ] Delete setup.php (if you haven't).
+  [ ] Set a real MySQL password and update DB_PASS in
+      includes\config.php (don't run as root with no password).
+  [ ] Serve the site over HTTPS. The session cookie's "secure"
+      flag turns on automatically once you're on HTTPS — no
+      code change needed.
+  [ ] If the public URL is the web root (not a /ZD_Birthdays
+      subfolder), set APP_BASE = '' in config.php.
+  [ ] Confirm the database "login_attempts" table exists (it's
+      part of schema.sql). It powers admin login throttling.
+  [ ] Keep backups of the "uploads" folder and the database.
+
+
+------------------------------------------------------------
+ QUICK TROUBLESHOOTING
+------------------------------------------------------------
+  "Service Unavailable / could not connect to the database"
+      -> MySQL isn't running, or DB name/user/pass in
+         config.php is wrong.
+
+  Page not found / links broken
+      -> APP_BASE in config.php doesn't match the folder name.
+
+  Photo upload does nothing
+      -> uploads\ folder isn't writable, or the file is over
+         5 MB / not a JPG/PNG/GIF/WEBP.
+
+  Locked out of admin login ("too many failed attempts")
+      -> Wait 15 minutes, or clear the rows in the
+         login_attempts table via phpMyAdmin.
+============================================================

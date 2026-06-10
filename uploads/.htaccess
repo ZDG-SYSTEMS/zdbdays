@@ -1,0 +1,15 @@
+Options -Indexes
+
+# Never execute uploaded files as scripts — serve them as static content only.
+php_flag engine off
+AddType application/octet-stream .php .phtml .phar .php3 .php4 .php5 .php7 .pht .cgi .pl
+
+<FilesMatch "\.(php|phtml|phar|php3|php4|php5|php7|pht|cgi|pl|asp|aspx|jsp|sh)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
