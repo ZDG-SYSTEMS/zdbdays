@@ -8,7 +8,7 @@ define('DB_NAME', 'zdbd');
 define('DB_USER', 'root');
 define('DB_PASS', '');   // XAMPP default — change for production
 
-define('APP_BASE',      '/zdbdays');   // subfolder under htdocs — change for production
+define('APP_BASE',      '');   // '' = served from domain root (production). Use '/foldername' if under a subfolder.
 define('APP_TIMEZONE',  'Africa/Lusaka');
 define('APP_ROOT',      dirname(__DIR__));
 define('UPLOAD_PATH',   APP_ROOT . '/uploads');
