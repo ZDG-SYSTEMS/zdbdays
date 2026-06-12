@@ -13,12 +13,20 @@ function isHttps(): bool {
 
 function sessionStart(): void {
     if (session_status() === PHP_SESSION_NONE) {
+        // Store sessions in a project-local, web-protected directory. This avoids
+        // the common shared-hosting failure where the host's default save_path
+        // isn't writable (or is blocked by open_basedir), which silently drops
+        // every session and surfaces as "session expired" on login.
+        $sessDir = APP_ROOT . '/storage/sessions';
+        if (is_dir($sessDir) && is_writable($sessDir)) {
+            session_save_path($sessDir);
+        }
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
             'secure'   => isHttps(), // auto-enabled once served over HTTPS in production
             'httponly' => true,
-            'samesite' => 'Strict',
+            'samesite' => 'Lax',     // Lax still blocks cross-site CSRF; Strict can drop the cookie on redirect-in flows
         ]);
         session_start();
     }

@@ -1,0 +1,2 @@
+# Deny all web access to application storage (sessions, etc.)
+Require all denied
