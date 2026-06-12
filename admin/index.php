@@ -49,13 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/zdbdays/assets/css/admin.css">
+<link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 <body class="login-body">
 
 <div class="login-wrap">
   <div class="login-brand">
-    <img src="/zdbdays/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
+    <img src="/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
     <h1>ZD Birthdays</h1>
     <p>Admin Access</p>
   </div>

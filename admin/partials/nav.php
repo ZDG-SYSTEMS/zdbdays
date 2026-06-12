@@ -25,7 +25,7 @@ function navLink(string $href, string $icon, string $label, string $current_page
 
 <aside class="admin-sidebar">
   <div class="sidebar-brand">
-    <img src="/zdbdays/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
+    <img src="/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
     <div class="brand-text">
       <strong>ZD</strong>
       <small>Birthdays</small>

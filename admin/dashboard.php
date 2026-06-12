@@ -35,7 +35,7 @@ $months = [
 <title>Dashboard — ZD Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/zdbdays/assets/css/admin.css">
+<link rel="stylesheet" href="/assets/css/admin.css">
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body class="admin-body">
@@ -190,7 +190,7 @@ $months = [
   </div>
 </main>
 
-<script src="/zdbdays/assets/js/admin.js"></script>
+<script src="/assets/js/admin.js"></script>
 <script>
 // Sync branch dropdown to selected company
 const allBranches = <?= json_encode($branches) ?>;
