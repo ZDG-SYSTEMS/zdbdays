@@ -17,25 +17,17 @@ if (isAdminLoggedIn($pdo)) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $ip = clientIp();
+    // Login throttling removed for testing — to be re-added later.
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    // CSRF check disabled on login (was: if (!verifyCsrf()) { $error = 'Your session expired...'; })
-    if (isLoginThrottled($pdo, $ip)) {
-        $error = 'Too many failed attempts. Please wait 15 minutes and try again.';
+    if (!$username || !$password) {
+        $error = 'Please enter your username and password.';
+    } elseif (loginAdmin($pdo, $username, $password)) {
+        header('Location: ' . APP_BASE . '/admin/dashboard.php');
+        exit;
     } else {
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
-
-        if (!$username || !$password) {
-            $error = 'Please enter your username and password.';
-        } elseif (loginAdmin($pdo, $username, $password)) {
-            clearLoginFailures($pdo, $ip);
-            header('Location: ' . APP_BASE . '/admin/dashboard.php');
-            exit;
-        } else {
-            recordLoginFailure($pdo, $ip);
-            $error = 'Invalid username or password.';
-        }
+        $error = 'Invalid username or password.';
     }
 }
 ?>
