@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin sidebar navigation — included on every admin page
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_dir  = basename(dirname($_SERVER['PHP_SELF']));
