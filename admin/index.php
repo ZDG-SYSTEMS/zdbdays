@@ -19,9 +19,8 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ip = clientIp();
 
-    if (!verifyCsrf()) {
-        $error = 'Your session expired. Please try again.';
-    } elseif (isLoginThrottled($pdo, $ip)) {
+    // CSRF check disabled on login (was: if (!verifyCsrf()) { $error = 'Your session expired...'; })
+    if (isLoginThrottled($pdo, $ip)) {
         $error = 'Too many failed attempts. Please wait 15 minutes and try again.';
     } else {
         $username = trim($_POST['username'] ?? '');
