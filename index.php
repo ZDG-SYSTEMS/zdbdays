@@ -35,7 +35,7 @@ $captionsJson = json_encode(array_column($captions, 'caption_text'));
 
 // No-birthday image
 $noBdImg = getSetting($pdo, 'no_birthday_image');
-$noBdSrc = $noBdImg ? (UPLOAD_URL . '/defaults/' . rawurlencode($noBdImg)) : APP_BASE . '/assets/img/sadt.gif';
+$noBdSrc = $noBdImg ? (UPLOAD_URL . '/defaults/' . rawurlencode($noBdImg)) : '/zdbdays/assets/img/sadt.gif';
 
 $months = [
     '01'=>'January','02'=>'February','03'=>'March','04'=>'April',
@@ -53,7 +53,7 @@ $months = [
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/style.css">
+<link rel="stylesheet" href="/zdbdays/assets/css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
@@ -61,7 +61,7 @@ $months = [
 
 <!-- Site logo (top-left) -->
 <a href="<?= APP_BASE ?>/" class="site-logo" aria-label="Home">
-  <img src="<?= APP_BASE ?>/assets/img/zdg_logo.jpeg" alt="Zambezi Diamond">
+  <img src="/zdbdays/assets/img/zdg_logo.jpeg" alt="Zambezi Diamond">
 </a>
 
 <!-- ======================================================
@@ -330,7 +330,7 @@ $months = [
 <?php endif; ?>
 
 <footer class="site-footer">
-  <img src="<?= APP_BASE ?>/assets/img/zdg_logo.jpeg" class="footer-logo" alt="Zambezi Diamond">
+  <img src="/zdbdays/assets/img/zdg_logo.jpeg" class="footer-logo" alt="Zambezi Diamond">
   <p>© <?= date('Y') ?> <?= htmlspecialchars(getSetting($pdo, 'site_name') ?: 'Birthdays.ZambeziDiamond') ?></p>
 </footer>
 
@@ -353,6 +353,6 @@ const CAPTIONS      = <?= $captionsJson ?: '[]' ?>;
 const BANNER_STATE  = '<?= $bannerState ?>';
 const WISH_WINDOW   = <?= WISH_EDIT_WINDOW ?>;
 </script>
-<script src="<?= APP_BASE ?>/assets/js/app.js"></script>
+<script src="/zdbdays/assets/js/app.js"></script>
 </body>
 </html>

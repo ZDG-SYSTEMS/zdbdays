@@ -20,5 +20,3 @@ define('MAX_FILE_SIZE', 5242880); // 5 MB
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg','image/png','image/gif','image/webp']);
 define('ALLOWED_IMAGE_EXTS',  ['jpg','jpeg','png','gif','webp']);
 define('ADMIN_PATH', APP_ROOT . '/admin');
- //  git config --global user.email "you@example.com"
-  git config --global user.name "Your Name"
