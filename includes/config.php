@@ -8,7 +8,7 @@ define('DB_NAME', 'zdbd');
 define('DB_USER', 'root');
 define('DB_PASS', '');   // XAMPP default — change for production
 
-define('APP_BASE',      '/ZD_Birthdays');   // subfolder under htdocs — change for production
+define('APP_BASE',      '/zdbdays');   // subfolder under htdocs — change for production
 define('APP_TIMEZONE',  'Africa/Lusaka');
 define('APP_ROOT',      dirname(__DIR__));
 define('UPLOAD_PATH',   APP_ROOT . '/uploads');
@@ -20,3 +20,5 @@ define('MAX_FILE_SIZE', 5242880); // 5 MB
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg','image/png','image/gif','image/webp']);
 define('ALLOWED_IMAGE_EXTS',  ['jpg','jpeg','png','gif','webp']);
 define('ADMIN_PATH', APP_ROOT . '/admin');
+ //  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
