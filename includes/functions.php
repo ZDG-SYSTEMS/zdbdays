@@ -663,15 +663,18 @@ function parseBirthdateInput(string $raw): ?string {
 }
 
 function outputCSVTemplate(): void {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="zd_birthday_import_template.csv"');
-    $out = fopen('php://output', 'w');
-    fputcsv($out, ['Full Name', 'Birthdate (dd/mm)', 'Gender (M/F)', 'Company Code', 'Branch', 'Position']);
-    // Birthdate written as an Excel text formula (="dd/mm") so spreadsheets
-    // keep it literally as dd/mm instead of converting it to a real date.
-    fputcsv($out, ['John Doe',   '="15/03"', 'M', 'ZDL', 'Ndola',  'Sales Consultant']);
-    fputcsv($out, ['Jane Smith', '="22/08"', 'F', 'IBS', 'Lusaka', 'Loan Officer']);
-    fclose($out);
+    // Serve the prepared Excel workbook — it carries the instructions and the
+    // exact columns people must fill in, so they upload the correct format.
+    $file = __DIR__ . '/../assets/templates/ZDG_Birthdays.xlsx';
+    if (!is_readable($file)) {
+        http_response_code(404);
+        exit('Template file not found.');
+    }
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="ZDG_Birthdays.xlsx"');
+    header('Content-Length: ' . filesize($file));
+    header('Cache-Control: no-store');
+    readfile($file);
     exit;
 }
 

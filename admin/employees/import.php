@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="import-info">
       <h3>Instructions</h3>
       <ol>
-        <li>Download the CSV template below.</li>
+        <li>Download the Excel template below and read its instructions.</li>
         <li>Fill in employee data — <strong>do not change column headers</strong>.</li>
         <li>Save the file as CSV (UTF-8) from Excel or Google Sheets.</li>
         <li>Upload the completed file here.</li>
