@@ -175,7 +175,7 @@ body {
 
 .bday-photo {
     position: relative;
-    width: 300px;
+    width: 380px;
     flex-shrink: 0;
 }
 /* soft blurred shadow that sits behind the (frameless) photo */
@@ -307,7 +307,7 @@ body {
 .bday-twin:nth-child(3) { animation-delay: .25s; }
 
 .bday-twin .bday-photo {
-    width: 220px;
+    width: 280px;
     margin: 0 auto 1.25rem;
 }
 
@@ -1157,7 +1157,7 @@ body {
         gap: 2rem;
         text-align: center;
     }
-    .bday-photo  { width: 240px; }
+    .bday-photo  { width: 300px; }
     .bday-msg       { border-left: none; padding-left: 0; }
     .bday-company   { justify-content: center; }
     .banner-inner--countdown { gap: 2.5rem; }
@@ -1172,7 +1172,7 @@ body {
     .time-block span { font-size: 2.75rem; }
     .time-block      { min-width: 55px; }
     .bday-twins      { gap: 1.5rem; }
-    .bday-twin .bday-photo { width: 160px; }
+    .bday-twin .bday-photo { width: 200px; }
     .wish-card       { min-width: 180px; max-width: 86vw; }
     .wishes-track    { gap: 2.5rem 1.5rem; padding: 2.5rem .25rem 1.5rem; }
     .wish-arrow      { width: 46px; height: 46px; font-size: 2rem; }
