@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // ============================================================
 // Edit Employee  (with pessimistic record locking)
 // ============================================================
@@ -123,10 +123,11 @@ $bdInput = $_POST['birthdate'] ?? $emp['birthdate'] ?? '';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/assets/img/zdg_logo.jpeg" type="image/jpeg">
 <title>Edit Employee — ZD Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/admin.css">
+<link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 <body class="admin-body"
       data-lock-id="<?= $id ?>"
@@ -265,7 +266,7 @@ $bdInput = $_POST['birthdate'] ?? $emp['birthdate'] ?? '';
   </div>
 </main>
 
-<script src="<?= APP_BASE ?>/assets/js/admin.js"></script>
+<script src="/assets/js/admin.js"></script>
 <script>
 const branchData   = <?= json_encode($branches) ?>;
 const positionData = <?= json_encode($positions) ?>;

@@ -232,7 +232,7 @@ function getPrimaryImageUrl(PDO $pdo, int $employee_id, string $gender = 'M', ?s
         return UPLOAD_URL . '/defaults/' . rawurlencode($fallback);
     }
 
-    return APP_BASE . '/assets/img/default-avatar.svg';
+    return '/assets/img/default-avatar.svg';
 }
 
 // Replace an employee's photo with a single uploaded file.

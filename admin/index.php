@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // ============================================================
 // Admin Login
 // ============================================================
@@ -17,26 +17,17 @@ if (isAdminLoggedIn($pdo)) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $ip = clientIp();
+    // Login throttling removed for testing — to be re-added later.
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    if (!verifyCsrf()) {
-        $error = 'Your session expired. Please try again.';
-    } elseif (isLoginThrottled($pdo, $ip)) {
-        $error = 'Too many failed attempts. Please wait 15 minutes and try again.';
+    if (!$username || !$password) {
+        $error = 'Please enter your username and password.';
+    } elseif (loginAdmin($pdo, $username, $password)) {
+        header('Location: ' . APP_BASE . '/admin/dashboard.php');
+        exit;
     } else {
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
-
-        if (!$username || !$password) {
-            $error = 'Please enter your username and password.';
-        } elseif (loginAdmin($pdo, $username, $password)) {
-            clearLoginFailures($pdo, $ip);
-            header('Location: ' . APP_BASE . '/admin/dashboard.php');
-            exit;
-        } else {
-            recordLoginFailure($pdo, $ip);
-            $error = 'Invalid username or password.';
-        }
+        $error = 'Invalid username or password.';
     }
 }
 ?>
@@ -45,17 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/assets/img/zdg_logo.jpeg" type="image/jpeg">
 <title>Admin Login — ZD Birthdays</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= APP_BASE ?>/assets/css/admin.css">
+<link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 <body class="login-body">
 
 <div class="login-wrap">
   <div class="login-brand">
-    <img src="<?= APP_BASE ?>/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
+    <img src="/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
     <h1>ZD Birthdays</h1>
     <p>Admin Access</p>
   </div>

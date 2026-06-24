@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Admin sidebar navigation — included on every admin page
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_dir  = basename(dirname($_SERVER['PHP_SELF']));
@@ -25,7 +25,7 @@ function navLink(string $href, string $icon, string $label, string $current_page
 
 <aside class="admin-sidebar">
   <div class="sidebar-brand">
-    <img src="<?= APP_BASE ?>/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
+    <img src="/assets/img/zdg_logo.jpeg" class="brand-logo" alt="Zambezi Diamond">
     <div class="brand-text">
       <strong>ZD</strong>
       <small>Birthdays</small>

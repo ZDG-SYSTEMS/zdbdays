@@ -29,6 +29,14 @@ function sessionStart(): void {
     // Keep sessions alive server-side for the full lifetime.
     ini_set('session.gc_maxlifetime', (string)$lifetime);
 
+        // Store sessions in a project-local, web-protected directory. This avoids
+        // the common shared-hosting failure where the host's default save_path
+        // isn't writable (or is blocked by open_basedir), which silently drops
+        // every session and surfaces as "session expired" on login.
+        $sessDir = APP_ROOT . '/storage/sessions';
+        if (is_dir($sessDir) && is_writable($sessDir)) {
+            session_save_path($sessDir);
+        }
     session_set_cookie_params([
         'lifetime' => $lifetime,   // persistent cookie, slid forward on each load
         'path'     => '/',
@@ -50,7 +58,7 @@ function sessionStart(): void {
             'path'     => '/',
             'secure'   => isHttps(),
             'httponly' => true,
-            'samesite' => 'Strict',
+            'samesite' => 'Lax',     // Lax still blocks cross-site CSRF; Strict can drop the cookie on redirect-in flows
         ]);
     }
 }
