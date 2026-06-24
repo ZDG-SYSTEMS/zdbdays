@@ -1,7 +1,7 @@
 <?php
 // ============================================================
 // ZD Birthdays — First Admin Setup
-// ⚠️  DELETE THIS FILE after creating your first admin account
+// CAUTION! DELETE THIS FILE after creating your first admin account
 // ============================================================
 
 require_once __DIR__ . '/includes/db.php';
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("INSERT INTO admin_users (username, password_hash) VALUES (?, ?)");
         $stmt->execute([$username, $hash]);
-        $success = 'Admin account created. <strong>Delete this file (setup.php) now.</strong>';
+        $success = 'Admin account created. <strong>Delete this file (setup.php) now from the server.</strong>';
     }
 }
 ?>
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <div class="box">
-  <h2>Initial Admin Setup</h2>
+  <h2<?= $success ? ' style="text-align:center"' : '' ?>>Initial Admin Setup</h2>
   <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
   <?php if ($success): ?><div class="success"><?= $success ?></div><?php endif; ?>
   <?php if (!$success): ?>
@@ -74,8 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="password" name="confirm" required>
     <button type="submit">Create Admin Account</button>
   </form>
+  <div class="warn"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16" style="vertical-align: -0.125em"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg> Delete <code>setup.php</code> from the server immediately after setup.</div>
   <?php endif; ?>
-  <div class="warn">⚠️ Delete <code>setup.php</code> from the server immediately after setup.</div>
 </div>
 </body>
 </html>

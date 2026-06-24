@@ -7,12 +7,13 @@ $canAct   = $isOwn && ($elapsed <= WISH_EDIT_WINDOW);
 ?>
 <div class="wish-card" id="wish-card-<?= $w['id'] ?>">
   <div class="wish-bubble">
+    <span class="wish-frame" aria-hidden="true"></span>
     <div class="wish-message" id="wish-msg-<?= $w['id'] ?>">
       <?= nl2br(sanitize($w['message'])) ?>
     </div>
-  </div>
-  <div class="wish-attribution">
-    <span class="wish-author"><?= sanitize($w['author_name']) ?></span>
+    <div class="wish-attribution">
+      <span class="wish-author"><?= sanitize($w['author_name']) ?></span>
+    </div>
   </div>
   <?php if ($canAct): ?>
   <div class="wish-actions" id="wish-act-<?= $w['id'] ?>">

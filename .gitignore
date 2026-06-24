@@ -1,0 +1,33 @@
+# ------------------------------------------------------------
+#  Environment — never commit live credentials (avoids leaking
+#  DB passwords and prevents per-machine merge conflicts).
+# ------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+
+# ------------------------------------------------------------
+#  Runtime session store (per-app, see includes/bootstrap.php)
+# ------------------------------------------------------------
+/storage/sessions/*
+!/storage/sessions/.gitkeep
+
+# ------------------------------------------------------------
+#  User uploads — ship the folder (and its security .htaccess),
+#  but ignore runtime-uploaded files.
+# ------------------------------------------------------------
+/uploads/*
+!/uploads/.gitkeep
+!/uploads/.htaccess
+
+# ------------------------------------------------------------
+#  Local design / reference material (not part of the app)
+# ------------------------------------------------------------
+/assets/references/
+
+# ------------------------------------------------------------
+#  OS / editor cruft
+# ------------------------------------------------------------
+Thumbs.db
+.DS_Store
+*~

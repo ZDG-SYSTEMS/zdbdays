@@ -3,7 +3,7 @@
 // ZD Birthdays — Admin Authentication
 // ============================================================
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/bootstrap.php';
 
 function isHttps(): bool {
     return (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
@@ -12,15 +12,46 @@ function isHttps(): bool {
 }
 
 function sessionStart(): void {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_set_cookie_params([
-            'lifetime' => 0,
+    if (session_status() !== PHP_SESSION_NONE) return;
+
+    $lifetime = defined('SESSION_LIFETIME') ? SESSION_LIFETIME : 28800;
+
+    // Give the app its own session store. XAMPP's default save_path
+    // (C:\xampp\tmp) is shared with every other local app, whose 24-minute
+    // garbage-collection wipes our session files early — the real reason
+    // admins got logged out and had to clear cookies to recover.
+    if (defined('SESSION_PATH')) {
+        if (!is_dir(SESSION_PATH)) @mkdir(SESSION_PATH, 0700, true);
+        if (is_dir(SESSION_PATH) && is_writable(SESSION_PATH)) {
+            ini_set('session.save_path', SESSION_PATH);
+        }
+    }
+    // Keep sessions alive server-side for the full lifetime.
+    ini_set('session.gc_maxlifetime', (string)$lifetime);
+
+    session_set_cookie_params([
+        'lifetime' => $lifetime,   // persistent cookie, slid forward on each load
+        'path'     => '/',
+        'secure'   => isHttps(),   // auto-enabled once served over HTTPS in production
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+    session_start();
+
+    // Touch the session on every request so its file mtime updates even when no
+    // data changed (PHP's lazy_write would otherwise skip the write). This is
+    // what makes a plain page reload reset the idle timer.
+    $_SESSION['last_activity'] = time();
+
+    // Slide the cookie expiry forward so an active admin's cookie never lapses.
+    if (ini_get('session.use_cookies')) {
+        setcookie(session_name(), session_id(), [
+            'expires'  => time() + $lifetime,
             'path'     => '/',
-            'secure'   => isHttps(), // auto-enabled once served over HTTPS in production
+            'secure'   => isHttps(),
             'httponly' => true,
             'samesite' => 'Strict',
         ]);
-        session_start();
     }
 }
 

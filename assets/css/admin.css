@@ -764,9 +764,11 @@ body {
 
 .table-avatar {
     width: 34px; height: 34px;
+    min-width: 34px; min-height: 34px;
     border-radius: 50%;
     object-fit: cover;
     border: 1.5px solid var(--border);
+    display: block;
 }
 
 .td-avatar  { width: 50px; padding-right: 0; }

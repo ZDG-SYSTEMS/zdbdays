@@ -3,7 +3,7 @@
 // ZD Birthdays — Helper Functions
 // ============================================================
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/bootstrap.php';
 
 // ------------------------------------------------------------
 // Timezone Helpers
@@ -396,6 +396,61 @@ function markSessionWished(int $employee_id): void {
 // Image Upload
 // ------------------------------------------------------------
 
+// Resize (if larger than IMAGE_MAX_DIM on the long edge) and re-encode an image
+// so stored photos stay small — a 5 MB camera original becomes a few hundred KB,
+// which speeds up every public page load and shrinks backups. Animated GIFs are
+// copied untouched to keep their animation; if GD is missing or anything fails,
+// we fall back to a plain move so an upload never silently disappears.
+// $isUpload picks the safe mover (move_uploaded_file) for real HTTP uploads.
+function storeOptimizedImage(string $tmp, string $dest, string $ext, bool $isUpload = true): bool {
+    $moveRaw = static function (string $src, string $dst) use ($isUpload): bool {
+        return $isUpload ? move_uploaded_file($src, $dst) : rename($src, $dst);
+    };
+
+    // GIFs may be animated — never resample them. No GD: nothing to optimise.
+    if ($ext === 'gif' || !function_exists('imagecreatetruecolor')) {
+        return $moveRaw($tmp, $dest);
+    }
+
+    $info = @getimagesize($tmp);
+    if (!$info) return $moveRaw($tmp, $dest);
+    [$w, $h] = $info;
+
+    switch ($info['mime']) {
+        case 'image/jpeg': $src = @imagecreatefromjpeg($tmp); break;
+        case 'image/png':  $src = @imagecreatefrompng($tmp);  break;
+        case 'image/webp': $src = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($tmp) : false; break;
+        default:           $src = false;
+    }
+    if (!$src) return $moveRaw($tmp, $dest);
+
+    $scale = min(1, IMAGE_MAX_DIM / max($w, $h));
+    $nw = max(1, (int)round($w * $scale));
+    $nh = max(1, (int)round($h * $scale));
+
+    $dst = imagecreatetruecolor($nw, $nh);
+    // Preserve transparency for PNG / WebP.
+    if (in_array($info['mime'], ['image/png', 'image/webp'], true)) {
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+    }
+    imagecopyresampled($dst, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
+
+    $ok = false;
+    switch ($ext) {
+        case 'jpg':
+        case 'jpeg': $ok = imagejpeg($dst, $dest, IMAGE_QUALITY); break;
+        case 'png':  $ok = imagepng($dst, $dest, 6); break;
+        case 'webp': $ok = function_exists('imagewebp') ? imagewebp($dst, $dest, IMAGE_QUALITY) : false; break;
+    }
+    imagedestroy($src);
+    imagedestroy($dst);
+
+    if (!$ok) return $moveRaw($tmp, $dest); // re-encode failed — keep the original
+    if ($isUpload) @unlink($tmp);           // tmp consumed by GD, not by move_uploaded_file
+    return true;
+}
+
 function handleImageUpload(array $file, int $employee_id): string|false {
     if ($file['error'] !== UPLOAD_ERR_OK) return false;
     if ($file['size'] > MAX_FILE_SIZE) return false;
@@ -424,7 +479,7 @@ function handleImageUpload(array $file, int $employee_id): string|false {
     $filename = uniqid('img_', true) . '.' . $ext;
     $dest     = $dir . '/' . $filename;
 
-    if (!move_uploaded_file($file['tmp_name'], $dest)) return false;
+    if (!storeOptimizedImage($file['tmp_name'], $dest, $ext)) return false;
     return $filename;
 }
 
@@ -456,7 +511,7 @@ function handleDefaultImageUpload(array $file, string $name): string|false {
     $filename = $name . '.' . $ext;
     $dest     = $dir . '/' . $filename;
 
-    if (!move_uploaded_file($file['tmp_name'], $dest)) return false;
+    if (!storeOptimizedImage($file['tmp_name'], $dest, $ext)) return false;
     return $filename;
 }
 

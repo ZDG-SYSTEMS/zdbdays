@@ -5,9 +5,75 @@
 document.addEventListener('DOMContentLoaded', function () {
     initLockSystem();
     initImagePreview();
+    initUploadCompression();
     initToasts();
     initBdayPickers();
 });
+
+// ============================================================
+// UPLOAD COMPRESSION
+// Downscales a chosen photo in the browser BEFORE it is uploaded.
+// A full-resolution phone photo (several MB) is the main reason saving
+// an employee felt slow — shrinking it client-side means far less data
+// travels over the wire, so the save returns quickly. The server still
+// re-optimises as a safety net (see storeOptimizedImage in functions.php).
+// ============================================================
+var UPLOAD_MAX_DIM = 1000;   // px on the long edge — keep in step with IMAGE_MAX_DIM
+var UPLOAD_QUALITY = 0.82;
+var UPLOAD_SKIP_BYTES = 300 * 1024; // already small enough — don't bother
+
+function initUploadCompression() {
+    document.querySelectorAll('form input[type="file"][name="image"]').forEach(function (input) {
+        var form = input.form;
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+            if (form.dataset.imgReady === '1') return; // compressed pass — let it through
+
+            var file = input.files && input.files[0];
+            // Only lossy raster types; leave GIFs (animation) and tiny files alone.
+            if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < UPLOAD_SKIP_BYTES) {
+                return;
+            }
+
+            e.preventDefault();
+            compressImage(file, UPLOAD_MAX_DIM, UPLOAD_QUALITY).then(function (blob) {
+                if (blob && blob.size < file.size) {
+                    var dt = new DataTransfer();
+                    dt.items.add(new File([blob], file.name, { type: blob.type }));
+                    input.files = dt.files;
+                }
+            }).catch(function () {
+                /* fall back to the original file */
+            }).finally(function () {
+                form.dataset.imgReady = '1';
+                form.submit();
+            });
+        });
+    });
+}
+
+// Resolve to a downscaled Blob of the same image type (transparency preserved
+// for PNG/WebP). Rejects if the image can't be decoded.
+function compressImage(file, maxDim, quality) {
+    return new Promise(function (resolve, reject) {
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function () {
+            var w = img.naturalWidth, h = img.naturalHeight;
+            var scale = Math.min(1, maxDim / Math.max(w, h));
+            var canvas = document.createElement('canvas');
+            canvas.width  = Math.max(1, Math.round(w * scale));
+            canvas.height = Math.max(1, Math.round(h * scale));
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            var type = (file.type === 'image/png' || file.type === 'image/webp') ? file.type : 'image/jpeg';
+            canvas.toBlob(function (blob) { resolve(blob); }, type, quality);
+        };
+        img.onerror = function () { URL.revokeObjectURL(url); reject(); };
+        img.src = url;
+    });
+}
 
 // ============================================================
 // BIRTHDAY PICKER — calendar-style month/day picker (no year)
@@ -125,6 +191,7 @@ var _lastActivity  = Date.now();
 var _lockId        = 0;
 var _lockTimeout   = 600000; // 10 min ms
 var _heartbeatInterval = null;
+var _saving        = false;  // true once the user submits the edit form
 
 function initLockSystem() {
     var body = document.body;
@@ -151,8 +218,18 @@ function initLockSystem() {
         }
     }, 60000);
 
-    // Release lock on tab close / navigation away
+    // When the user saves, the save POST clears the lock server-side. Mark that
+    // we're saving so the unload handler below does NOT also fire a release
+    // beacon — that beacon used to race the save and intermittently fail it
+    // with "edit session expired".
+    var lockForm = document.getElementById('edit-form');
+    if (lockForm) {
+        lockForm.addEventListener('submit', function () { _saving = true; });
+    }
+
+    // Release lock on tab close / navigation away (but not when saving).
     window.addEventListener('beforeunload', function () {
+        if (_saving) return;
         sendLockRelease(_lockId);
     });
 

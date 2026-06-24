@@ -38,12 +38,13 @@ $errors    = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireCsrf();
-    // Verify lock still belongs to this admin
-    $stmt = $pdo->prepare("SELECT locked_by FROM employees WHERE id = ?");
-    $stmt->execute([$id]);
-    $lockRow = $stmt->fetch();
-    if (!$lockRow || (int)$lockRow['locked_by'] !== $admin_id) {
-        setFlash('danger', 'Your edit session expired. Please try again.');
+    // Only block the save if ANOTHER admin currently holds an active lock on
+    // this record. A lock that is free or stale (our heartbeat lapsed, or the
+    // page-unload release beacon raced this POST) is fine to save through — we
+    // are the editor and nobody else is in.
+    if (isLockedByOther($pdo, $id, $admin_id)) {
+        $holder = getLockHolder($pdo, $id);
+        setFlash('danger', 'This record is now being edited by ' . htmlspecialchars($holder['username'] ?? 'another admin') . '. Your changes were not saved.');
         header('Location: ' . APP_BASE . '/admin/dashboard.php');
         exit;
     }
